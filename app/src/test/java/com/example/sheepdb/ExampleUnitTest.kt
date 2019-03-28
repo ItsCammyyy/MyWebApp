@@ -1,4 +1,4 @@
-package com.example.mywebapp
+package com.example.sheepdb
 
 import org.junit.Test
 

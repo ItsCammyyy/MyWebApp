@@ -1,4 +1,4 @@
-package com.example.mywebapp
+package com.example.sheepdb
 
 class Sheep (nodeID:Int, nodeName:String, nodeDes:String) {
 
