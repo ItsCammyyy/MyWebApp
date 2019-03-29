@@ -16,13 +16,15 @@ class DbManager {
     var dbTable = "Sheep"
     //columns
     var colID = "ID"
-    var colTitle = "Tag Number"
+    var colTitle = "Title"
     var colDes = "Details"
     //database version
     var dbVersion = 1
 
     //Create table if not exists MySheep (ID Integer Primary Key, title Text, description Text) ;"
-    var sqlCreateTable = "CREATE TABLE IF NOT EXIST"+dbTable+"("+colID+"INTEGER PRIMARY KEY,"+ colTitle +"TEXT,"+colDes+"TEXT);"
+    var sqlCreateTable = "CREATE TABLE IF NOT EXISTS"+dbTable+"("+colID+" INTEGER PRIMARY KEY," +colTitle +"TEXT, "+colDes+"TEXT);"
+
+
 
     var sqlDB:SQLiteDatabase?=null
 

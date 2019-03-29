@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.SearchView
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
@@ -23,13 +24,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        button.setOnClickListener {
-            startActivity(Intent(this, AddSheepActivity::class.java))
+
 
             //Load from DB
             LoadQuery("%")
 
-        }
+
     }
 
     private fun LoadQuery(title: String) {
@@ -52,6 +52,18 @@ class MainActivity : AppCompatActivity() {
         
         //adapter
         var mySheepAdapter = MySheepAdapter(this, listSheep)
+
+        //set adapter
+        notesLv.adapter = mySheepAdapter
+
+        //get total number of tasks from ListView
+        val total = notesLv.count
+        //actionbar
+        val mActionBar = supportActionBar
+        if (mActionBar != null) {
+            //set to actionbar as subtitle of actionbar
+            mActionBar.subtitle = "You have ${total}sheep(s) in list..."
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -63,32 +75,50 @@ class MainActivity : AppCompatActivity() {
         val sm = getSystemService(Context.SEARCH_SERVICE) as SearchManager
         sv.setSearchableInfo(sm.getSearchableInfo(componentName))
         sv.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
-            override fun onQueryTextSubmit(p0: String?): Boolean {
-                Load
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                LoadQuery("%"+query+"%")
+                return false
             }
 
-            override fun onQueryTextChange(p0: String?): Boolean {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            override fun onQueryTextChange(newText: String?): Boolean {
+                LoadQuery("%"+newText+"%")
+                return false
             }
         });
+
+        return super.onCreateOptionsMenu(menu)
     }
 
-    inner class MySheepAdapter : BaseAdapter() {
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item != null) {
+            when(item.itemId){
+                R.id.addSheep->{
+                    startActivity(Intent(this, AddSheepActivity::class.java))
+                }
+                R.id.action_settings->{
+                    Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    inner class MySheepAdapter : BaseAdapter {
         var listSheepAdapter = ArrayList<Sheep>()
         var context:Context?=null
 
-        constructor( context: Context, listSheepAdapter: ArrayList<Sheep>) : super() {
+        constructor(context: Context, listSheepAdapter: ArrayList<Sheep>) : super() {
             this.listSheepAdapter = listSheepAdapter
             this.context = context
         }
 
-
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             //inflate layout row.xml
             var myView = layoutInflater.inflate(R.layout.row, null)
-            val mySheep = listSheepAdapter[position]
+            var mySheep = listSheepAdapter[position]
             myView.titleTv.text = mySheep.nodeName
             myView.descTv.text = mySheep.nodeDes
+
             //delete button click
             myView.deleteBtn.setOnClickListener {
                 var dbManager = DbManager(this.context!!)
@@ -112,8 +142,9 @@ class MainActivity : AppCompatActivity() {
                 cb.text = s // add to  clipboard
                 Toast.makeText(this@MainActivity, "Copied. . .", Toast.LENGTH_SHORT).show()
             }
+
             //share btn click
-            shareBtn.setOnClickListener {
+            myView.shareBtn.setOnClickListener {
                 //get title
                 val title = myView.titleTv.text.toString()
                 //get description
