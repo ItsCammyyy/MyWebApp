@@ -32,7 +32,7 @@ class AddSheepActivity : AppCompatActivity() {
 
         var values = ContentValues()
         values.put("Title", titleEt.text.toString())
-        values.put("Description", descEt.text.toString())
+        values.put("Details", descEt.text.toString())
 
         if (id ==0 ){
             val ID = dbManager.insert(values)

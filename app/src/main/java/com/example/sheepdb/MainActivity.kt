@@ -4,6 +4,7 @@ import android.app.SearchManager
 import android.text.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.SearchView
@@ -20,50 +21,56 @@ import kotlinx.android.synthetic.main.row.view.*
 class MainActivity : AppCompatActivity() {
 
     var listSheep = ArrayList<Sheep>()
+    var cursor:Cursor? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
 
-            //Load from DB
-            LoadQuery("%")
+        //Load from DB
+        LoadQuery("%")
 
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        LoadQuery("%")
+    }
+
     private fun LoadQuery(title: String) {
         var dbManager =  DbManager(this)
-        val projections = arrayOf("ID", "Title", "Description")
+        val projections = arrayOf("ID", "Title", "Details")
         val selectionArgs = arrayOf(title)
-        val cursor = dbManager.Query(projections, "Title like ?", selectionArgs, "Title")
+        var cursor = dbManager.Query(projections, "Title like ?", selectionArgs, "Title")
         listSheep.clear()
         if (cursor.moveToFirst()){
-
             do {
                 val ID = cursor.getInt(cursor.getColumnIndex("ID"))
                 val Title = cursor.getString(cursor.getColumnIndex("Title"))
-                val Description = cursor.getString(cursor.getColumnIndex("Description"))
+                val Description = cursor.getString(cursor.getColumnIndex("Details"))
 
                 listSheep.add(Sheep(ID, Title, Description))
 
             }while (cursor.moveToNext())
         }
-        
+
         //adapter
         var mySheepAdapter = MySheepAdapter(this, listSheep)
 
-        //set adapter
+////        //set adapter
         notesLv.adapter = mySheepAdapter
-
-        //get total number of tasks from ListView
-        val total = notesLv.count
-        //actionbar
-        val mActionBar = supportActionBar
-        if (mActionBar != null) {
-            //set to actionbar as subtitle of actionbar
-            mActionBar.subtitle = "You have ${total}sheep(s) in list..."
-        }
+////        mySheepAdapter.notifyDataSetChanged()
+//
+//        //get total number of tasks from ListView
+//        val total = notesLv.count
+//        //actionbar
+//        val mActionBar = supportActionBar
+//        if (mActionBar != null) {
+//            //set to actionbar as subtitle of actionbar
+//            mActionBar.subtitle = "You have ${total}sheep(s) in list..."
+//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -163,11 +170,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun getItem(position: Int): Any {
-           return listSheepAdapter[position]
+            return listSheepAdapter[position]
         }
 
         override fun getItemId(position: Int): Long {
-           return position.toLong()
+            return position.toLong()
         }
 
         override fun getCount(): Int {

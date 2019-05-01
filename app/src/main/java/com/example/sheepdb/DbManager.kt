@@ -22,7 +22,8 @@ class DbManager {
     var dbVersion = 1
 
     //Create table if not exists MySheep (ID Integer Primary Key, title Text, description Text) ;"
-    var sqlCreateTable = "CREATE TABLE IF NOT EXISTS"+dbTable+"("+colID+" INTEGER PRIMARY KEY," +colTitle +"TEXT, "+colDes+"TEXT);"
+    var sqlCreateTable =
+        "CREATE TABLE IF NOT EXISTS $dbTable ($colID INTEGER PRIMARY KEY,$colTitle TEXT, $colDes TEXT);"
 
 
 
@@ -47,7 +48,7 @@ class DbManager {
         }
 
         override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-            db!!.execSQL("Drop table if Exists" + dbTable)
+            db!!.execSQL("Drop table if Exists $dbTable")
         }
 
 
